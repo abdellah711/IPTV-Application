@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.app.tvapp.R
 import com.app.tvapp.data.entities.DBChannel
 import com.app.tvapp.databinding.ChannelItemBinding
 import com.app.tvapp.ui.PlayerActivity
@@ -48,7 +49,8 @@ class ChannelsAdapter(
             }
             name.text = channel.name
             name.isSelected = true
-            lang.text = channel.category
+            categ.text = if(channel.category.isNotEmpty()) channel.category else "Undefined"
+
             Glide.with(root.context)
                 .load(channel.logo)
                 .into(img)

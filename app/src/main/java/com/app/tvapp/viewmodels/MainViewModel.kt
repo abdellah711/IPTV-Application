@@ -1,13 +1,13 @@
 package com.app.tvapp.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tvapp.data.database.ChannelDao
 import com.app.tvapp.data.entities.DBChannel
 import com.app.tvapp.data.network.ChannelApi
+import com.app.tvapp.others.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +21,8 @@ class MainViewModel @Inject constructor(
 
     val channels = channelDao.getAllChannels(100)
     val favs = channelDao.getFavorites()
+    var searchResult: MutableLiveData<Resource<List<DBChannel>>> =
+        MutableLiveData(Resource.Loading())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -34,16 +36,13 @@ class MainViewModel @Inject constructor(
 
     private suspend fun fetchData() {
         try {
-            Log.e("View Model", "fetching...")
             val response = channelApi.getChannels()
             if (response.isSuccessful && response.body() != null) {
-                Log.e("View Model", "fetching success")
                 response.body()?.let {
                     it.forEach { channel ->
                         channelDao.insertChannel(channel.toDBChannel())
                     }
                 }
-                Log.e("View Model", "insert success")
             }
         } catch (e: Exception) {
             Log.e("View Model", "fetch err: ${e.message}")
@@ -53,10 +52,10 @@ class MainViewModel @Inject constructor(
 
 
     fun search(text: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val result = channelDao.searchForChannel(text)
-//            _channels.postValue(result)
-//        }
+        viewModelScope.launch(Dispatchers.IO) {
+            searchResult.postValue(Resource.Loading())
+            searchResult.postValue(Resource.Success(channelDao.searchForChannel(text)))
+        }
     }
 
 

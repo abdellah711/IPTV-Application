@@ -41,7 +41,7 @@ class MainFragment : Fragment() {
                 ChannelFragment.newInstance(),
                 ChannelFragment.newInstance(true)
             ))
-            TabLayoutMediator(tabs,pager){ tab, pos ->
+            TabLayoutMediator(tabs.tabs,pager){ tab, pos ->
                 tab.text = titles[pos]
             }.attach()
         }

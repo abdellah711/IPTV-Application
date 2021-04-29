@@ -3,18 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.frags.MainFragment">
-    <com.google.android.material.tabs.TabLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:id="@+id/tabs"
-        app:tabIndicatorFullWidth="false"
-        app:tabIndicatorAnimationMode="elastic"
-        app:tabIndicatorHeight="4dp"
-        app:tabIndicator="@drawable/tab_indicator"
-        />
+
+    <include layout="@layout/tab_layout"
+        android:id="@+id/tabs"/>
+
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,17 +1,15 @@
 package com.app.tvapp.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
-import android.view.MotionEvent
-import android.widget.EditText
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import androidx.navigation.findNavController
 import com.app.tvapp.R
-import com.app.tvapp.adapters.ChannelsAdapter
 import com.app.tvapp.databinding.ActivityMainBinding
 import com.app.tvapp.others.onRightDrawableClicked
 import com.app.tvapp.ui.frags.MainFragment
@@ -34,14 +32,9 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         setSupportActionBar(binding.toolbar)
         setupSearch()
-        setupFrags()
+
     }
 
-    private fun setupFrags() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.container,MainFragment())
-            .commit()
-    }
 
     private fun setupSearch() {
         binding.apply {
@@ -49,32 +42,51 @@ class MainActivity : AppCompatActivity() {
                 sugLayout.isVisible = b
                 supportActionBar?.setDisplayShowHomeEnabled(b)
                 supportActionBar?.setDisplayHomeAsUpEnabled(b)
-                if (b) {
-                    searchView.compoundDrawables[2].setVisible(true,false)
-                    return@setOnFocusChangeListener
-                }
-                searchView.compoundDrawables[2].setVisible(false,false)
             }
             searchView.onRightDrawableClicked {
-                Log.e("Test","click")
+                search(searchView.text.toString())
             }
-//            searchView.setOnEditorActionListener { _, i, keyEvent ->
-//                if(keyEvent.action == KeyEvent.ACTION_DOWN)
-//            }
+            searchView.setOnKeyListener { _, i, event ->
+                if(event.action == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER){
+                    searchView.clearFocus()
+                    findNavController(R.id.nav_graph).navigate(R.id.action_mainFragment_to_searchFragment)
+                    true
+                }else {
+                    false
+                }
+            }
         }
     }
+    private fun search(text: String){
+        if(text.isEmpty()) return
 
-    override fun onNavigateUp(): Boolean {
-        Log.e("test","nav up")
-        return super.onNavigateUp()
+        hideKeyboard()
+        
+        val controller = findNavController(R.id.nav_graph)
+        if(controller.currentDestination?.id != R.id.searchFragment){
+            controller.navigate(R.id.action_mainFragment_to_searchFragment)
+        }
+        binding.searchView.clearFocus()
+
+        viewModel.search(text)
+    }
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return super.onSupportNavigateUp()
     }
 
     override fun onBackPressed() {
         if(binding.searchView.isFocused){
             binding.searchView.clearFocus()
+            hideKeyboard()
             return
         }
         super.onBackPressed()
+    }
+
+    private fun hideKeyboard() {
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(binding.searchView.applicationWindowToken, 0)
     }
 
 }
