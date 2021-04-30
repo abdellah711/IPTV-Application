@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tvapp.data.database.ChannelDao
 import com.app.tvapp.data.entities.DBChannel
+import com.app.tvapp.data.entities.Suggestion
 import com.app.tvapp.data.network.ChannelApi
 import com.app.tvapp.others.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,8 +23,11 @@ class MainViewModel @Inject constructor(
 
     val channels = channelDao.getAllChannels(100)
     val favs = channelDao.getFavorites()
+    val suggestions = channelDao.getSuggestions()
+
     var searchResult: MutableLiveData<Resource<List<DBChannel>>> =
         MutableLiveData(Resource.Loading())
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -53,8 +58,17 @@ class MainViewModel @Inject constructor(
 
     fun search(text: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            channelDao.insertSuggestion(
+                Suggestion(text.toLowerCase(Locale.getDefault()), System.currentTimeMillis())
+            )
             searchResult.postValue(Resource.Loading())
             searchResult.postValue(Resource.Success(channelDao.searchForChannel(text)))
+        }
+    }
+
+    fun deleteSuggestion(suggestion: Suggestion) {
+        viewModelScope.launch(Dispatchers.IO) {
+            channelDao.deleteSuggestion(suggestion)
         }
     }
 

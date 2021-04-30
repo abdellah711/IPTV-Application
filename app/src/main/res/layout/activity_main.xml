@@ -32,8 +32,10 @@
                 android:layout_marginBottom="7dp"
                 android:layout_marginEnd="9dp"
                 android:id="@+id/search_view"
+                android:inputType="text"
                 android:drawableEnd="@drawable/ic_search"
                 android:imeActionLabel="Search"
+                android:imeOptions="actionSearch"
                 />
 
         </LinearLayout>
@@ -69,6 +71,7 @@
             android:layout_height="match_parent"
             android:text="@string/no_suggestion"
             android:gravity="center_horizontal"
+            android:id="@+id/no_sug"
             android:paddingTop="22dp"/>
 
         <androidx.recyclerview.widget.RecyclerView

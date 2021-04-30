@@ -4,12 +4,17 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.tvapp.R
+import com.app.tvapp.adapters.SuggestionAdapter
 import com.app.tvapp.databinding.ActivityMainBinding
 import com.app.tvapp.others.onRightDrawableClicked
 import com.app.tvapp.ui.frags.MainFragment
@@ -32,7 +37,26 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         setSupportActionBar(binding.toolbar)
         setupSearch()
+        setupSuggetions()
+    }
 
+    private fun setupSuggetions() {
+
+        val sugAdapter = SuggestionAdapter(viewModel){
+            binding.searchView.setText(it)
+            search(it)
+        }
+
+        binding.sugRecycler.apply {
+            adapter = sugAdapter
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            addItemDecoration(DividerItemDecoration(this@MainActivity,VERTICAL))
+        }
+        viewModel.suggestions.observe(this){
+            sugAdapter.suggestions = it
+            binding.noSug.isVisible = it.isEmpty()
+        }
     }
 
 
@@ -44,16 +68,15 @@ class MainActivity : AppCompatActivity() {
                 supportActionBar?.setDisplayHomeAsUpEnabled(b)
             }
             searchView.onRightDrawableClicked {
-                search(searchView.text.toString())
+                search(searchView.text.toString().trim())
             }
-            searchView.setOnKeyListener { _, i, event ->
-                if(event.action == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER){
-                    searchView.clearFocus()
-                    findNavController(R.id.nav_graph).navigate(R.id.action_mainFragment_to_searchFragment)
+
+            searchView.setOnEditorActionListener { _, i, _ ->
+                if(i == EditorInfo.IME_ACTION_SEARCH) {
+                    search(searchView.text.toString().trim())
                     true
-                }else {
+                }else
                     false
-                }
             }
         }
     }
@@ -80,6 +103,9 @@ class MainActivity : AppCompatActivity() {
             binding.searchView.clearFocus()
             hideKeyboard()
             return
+        }
+        if(findNavController(R.id.nav_graph).currentDestination?.id==R.id.searchFragment){
+            binding.searchView.setText("")
         }
         super.onBackPressed()
     }

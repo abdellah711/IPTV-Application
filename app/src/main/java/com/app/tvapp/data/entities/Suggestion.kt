@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Suggestion(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long? = null,
-    val suggestion: String
+    @PrimaryKey(autoGenerate = false)
+    val suggestion: String,
+    val time: Long
 )

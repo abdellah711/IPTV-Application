@@ -1,10 +1,7 @@
 package com.app.tvapp.data.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.app.tvapp.data.entities.DBChannel
 import com.app.tvapp.data.entities.Suggestion
 
@@ -26,9 +23,13 @@ interface ChannelDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChannel(vararg channel:DBChannel)
 
-    @Query("SELECT * FROM suggestion")
+    @Query("SELECT * FROM suggestion ORDER BY time DESC LIMIT 10")
     fun getSuggestions(): LiveData<List<Suggestion>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSuggestion(sug: Suggestion)
+
+    @Delete
+    suspend fun deleteSuggestion(sug: Suggestion)
+
 }
