@@ -1,7 +1,6 @@
 package com.app.tvapp.data.entities
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(tableName = "channel")
 data class DBChannel(
@@ -15,5 +14,21 @@ data class DBChannel(
 //    val countries: List<Country>,
 //    val tvg: Tvg,
 //    val languages: List<Language>
+)
+
+@Entity(primaryKeys = ["id","code"])
+data class ChannelLangCrossRef(
+    var id: Long,
+    var code: String
+)
+
+data class ChannelWithLangs(
+    @Embedded var channel: DBChannel,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "code",
+        associateBy = Junction(ChannelLangCrossRef::class)
+    )
+    val langs: List<Language>
 )
 

@@ -7,18 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.app.tvapp.R
-import com.app.tvapp.adapters.ChannelsAdapter
+import com.app.tvapp.adapters.ChannelsPagingAdapter
 import com.app.tvapp.databinding.FragmentChannelBinding
 import com.app.tvapp.viewmodels.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val ARG_PARAM = "param"
 
 class ChannelFragment : Fragment() {
 
-    private lateinit var adapter: ChannelsAdapter
+    private lateinit var pagingAdapter: ChannelsPagingAdapter
     private val viewModel: MainViewModel by activityViewModels()
 
     private var isFav = false
@@ -49,21 +51,26 @@ class ChannelFragment : Fragment() {
 
     private fun setupRecycler() {
 
-        adapter = ChannelsAdapter(viewModel)
+        pagingAdapter = ChannelsPagingAdapter(viewModel)
 
         binding.recycler.apply {
             layoutManager = GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
             setHasFixedSize(true)
-            adapter = this@ChannelFragment.adapter
+            adapter = this@ChannelFragment.pagingAdapter
         }
         if(isFav)
             viewModel.favs.observe(viewLifecycleOwner) {
-                adapter.channels = it
-                binding.emptyLayout.isVisible = it.isEmpty()
+                lifecycleScope.launch(Dispatchers.IO) {
+                    pagingAdapter.submitData(it)
+                }
+
+                binding.emptyLayout.isVisible = pagingAdapter.itemCount == 0
             }
         else
             viewModel.channels.observe(viewLifecycleOwner) {
-                adapter.channels = it
+                lifecycleScope.launch(Dispatchers.IO) {
+                    pagingAdapter.submitData(it)
+                }
             }
     }
 

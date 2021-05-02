@@ -35,6 +35,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:ellipsize="marquee"
+            android:paddingStart="4dp"
             android:marqueeRepeatLimit="marquee_forever"
             tools:text="Channel 1"/>
         <TextView
@@ -42,12 +43,17 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/name"
             android:paddingTop="4dp"
+            android:paddingStart="4dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:id="@+id/lang"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/lang"
             android:paddingTop="4dp"
+            android:paddingStart="4dp"
+            android:textSize="14sp"
             android:paddingBottom="4dp"
             android:id="@+id/categ"
             />

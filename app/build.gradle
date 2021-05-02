@@ -94,7 +94,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     //pagination
-    def paging_version = "2.1.2"
+    def paging_version = "3.0.0-rc01"
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     testImplementation 'junit:junit:4.+'

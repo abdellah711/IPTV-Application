@@ -10,8 +10,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.app.tvapp.R
 import com.app.tvapp.adapters.ChannelsAdapter
+import com.app.tvapp.adapters.ChannelsPagingAdapter
 import com.app.tvapp.databinding.FragmentSearchBinding
 import com.app.tvapp.others.Resource
 import com.app.tvapp.viewmodels.MainViewModel
@@ -53,6 +53,7 @@ class SearchFragment : Fragment() {
                 adapter.channels = it.data
                 binding.emptyLayout.isVisible = it.data.isEmpty()
             }else{
+                //todo
                 Log.e("Test","loading....")
             }
 

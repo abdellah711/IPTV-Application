@@ -9,14 +9,16 @@ data class Channel(
     val name: String,
     val tvg: Tvg,
     val url: String
-){
+) {
 
-    fun toDBChannel(): DBChannel{
-        return DBChannel(
-            category = category?:"",
-            logo = logo?:"",
+    fun toDBChannel() = ChannelWithLangs(
+        DBChannel(
+            category = category ?: "",
+            logo = logo ?: "",
             name = name,
             url = url
-        )
-    }
+        ),
+        languages
+    )
+
 }

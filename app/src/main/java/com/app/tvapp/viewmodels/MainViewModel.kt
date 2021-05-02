@@ -4,10 +4,15 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import com.app.tvapp.data.database.ChannelDao
-import com.app.tvapp.data.entities.DBChannel
+import com.app.tvapp.data.entities.ChannelWithLangs
 import com.app.tvapp.data.entities.Suggestion
 import com.app.tvapp.data.network.ChannelApi
+import com.app.tvapp.others.Constants
 import com.app.tvapp.others.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +26,17 @@ class MainViewModel @Inject constructor(
     private val channelApi: ChannelApi
 ) : ViewModel() {
 
-    val channels = channelDao.getAllChannels(100)
-    val favs = channelDao.getFavorites()
+    val channels = Pager(PagingConfig(Constants.PAGING_SIZE)) {
+        channelDao.getAllChannels()
+    }.liveData.cachedIn(viewModelScope)
+
+    val favs = Pager(PagingConfig(Constants.PAGING_SIZE)) {
+        channelDao.getFavorites()
+    }.liveData
+
     val suggestions = channelDao.getSuggestions()
 
-    var searchResult: MutableLiveData<Resource<List<DBChannel>>> =
+    var searchResult: MutableLiveData<Resource<List<ChannelWithLangs>>> =
         MutableLiveData(Resource.Loading())
 
 
@@ -43,10 +54,13 @@ class MainViewModel @Inject constructor(
         try {
             val response = channelApi.getChannels()
             if (response.isSuccessful && response.body() != null) {
-                response.body()?.let {
-                    it.forEach { channel ->
-                        channelDao.insertChannel(channel.toDBChannel())
-                    }
+                response.body()?.let { lst ->
+
+                    val data = lst.map {
+                        it.toDBChannel()
+                    }.toTypedArray()
+
+                    channelDao.insertChannel(*data)
                 }
             }
         } catch (e: Exception) {

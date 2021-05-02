@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(binding.searchView.isFocused){
-            binding.searchView.clearFocus()
             hideKeyboard()
+            binding.searchView.clearFocus()
             return
         }
         if(findNavController(R.id.nav_graph).currentDestination?.id==R.id.searchFragment){
