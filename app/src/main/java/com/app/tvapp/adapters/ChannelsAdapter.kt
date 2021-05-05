@@ -25,7 +25,7 @@ class ChannelsAdapter(
 
             binding.apply {
                 root.setOnClickListener { v ->
-                    Intent(v.context, PlayerActivity::class.java).putExtra("channel", channel.url)
+                    Intent(v.context, PlayerActivity::class.java).putExtra("channel", channel)
                         .also {
                             v.context.startActivity(it)
                         }
@@ -80,10 +80,10 @@ class ChannelsAdapter(
         val channel = channelWithLangs.channel
         holder.binding.apply {
             root.setOnClickListener { v ->
-                Intent(v.context, PlayerActivity::class.java).putExtra("channel", channel.url)
-                    .also {
-                        v.context.startActivity(it)
-                    }
+                Intent(v.context, PlayerActivity::class.java).apply {
+                    putExtra("channel", channel)
+                    v.context.startActivity(this)
+                }
             }
             name.text = channel.name
             name.isSelected = true

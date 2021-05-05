@@ -1,7 +1,10 @@
 package com.app.tvapp.data.entities
 
+import android.os.Parcelable
 import androidx.room.*
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @Entity(tableName = "channel")
 data class DBChannel(
     @PrimaryKey(autoGenerate = true)
@@ -14,7 +17,7 @@ data class DBChannel(
 //    val countries: List<Country>,
 //    val tvg: Tvg,
 //    val languages: List<Language>
-)
+): Parcelable
 
 @Entity(primaryKeys = ["id","code"])
 data class ChannelLangCrossRef(

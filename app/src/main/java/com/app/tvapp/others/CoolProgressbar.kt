@@ -26,7 +26,7 @@ class CoolProgressbar @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         ValueAnimator.ofFloat(.2f,.9f).apply {
-            duration = 1000
+            duration = 700
             repeatCount = INFINITE
             repeatMode = REVERSE
             addUpdateListener {
