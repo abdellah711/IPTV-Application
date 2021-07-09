@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fragment="com.app.tvapp.ui.frags.SettingsFragment">
+
+    <androidx.preference.ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/themeEntries"
+        android:entryValues="@array/themeValues"
+        android:key="themes_key"
+        android:summary="%s"
+        android:title="Theme"
+        app:allowDividerBelow="true"
+        app:iconSpaceReserved="false" />
+
+    <androidx.preference.ListPreference
+        android:defaultValue="en"
+        android:entries="@array/langEntries"
+        android:entryValues="@array/langValues"
+        android:key="lang_key"
+        android:summary="%s"
+        android:title="Language"
+        app:iconSpaceReserved="false" />
+
+    <androidx.preference.Preference
+        android:key="clear_key"
+        android:title="Clear cache"
+        app:iconSpaceReserved="false" />
+
+
+</androidx.preference.PreferenceScreen>

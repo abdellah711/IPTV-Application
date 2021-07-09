@@ -55,4 +55,14 @@ interface ChannelDao {
     @Delete
     suspend fun deleteSuggestion(sug: Suggestion)
 
+    @Update
+    suspend fun updateChannel(channel: DBChannel)
+
+    @Query("DELETE FROM channel")
+    suspend fun deleteAllChannels()
+
+    @Query("DELETE FROM suggestion")
+    suspend fun deleteAllSuggestions()
+
+
 }

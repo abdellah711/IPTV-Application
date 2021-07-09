@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="SplashTheme" parent="Theme.TVApp">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+
+    <style name="GridItem">
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_marginTop">9dp</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="background">@color/gray</item>
+        <item name="android:layout_height">200dp</item>
+        <item name="android:layout_width">0dp</item>
+    </style>
+
+    <color name="gray">#DDDDDD</color>
+
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/light_white</item>
+    </style>
+
+    <style name="ErrorDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:buttonBarPositiveButtonStyle">@style/DialogButtonsStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/DialogButtonsStyle</item>
+    </style>
+
+    <style name="DialogButtonsStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+</resources>

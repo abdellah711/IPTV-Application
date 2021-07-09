@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string-array name="themeEntries">
+        <item>System Theme</item>
+        <item>Dark Mode</item>
+        <item>Light Mode</item>
+    </string-array>
+    
+    
+    <string-array name="themeValues">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="langEntries">
+        <item>English</item>
+        <item>French</item>
+        <item>Arabic</item>
+    </string-array>
+
+
+    <string-array name="langValues">
+        <item>en</item>
+        <item>fr</item>
+        <item>ar</item>
+    </string-array>
+
+
+
+</resources>

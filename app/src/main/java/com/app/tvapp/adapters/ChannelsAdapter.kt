@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.app.tvapp.R
 import com.app.tvapp.data.entities.ChannelWithLangs
 import com.app.tvapp.data.entities.Language
 import com.app.tvapp.databinding.ChannelItemBinding
@@ -36,7 +37,9 @@ class ChannelsAdapter(
 
                 Glide.with(root.context)
                     .load(channel.logo)
+                    .error(R.drawable.ic_no_logo)
                     .into(img)
+
 
                 lang.text =
                     if (channelWithLangs.langs.isNotEmpty())
@@ -76,24 +79,7 @@ class ChannelsAdapter(
         ViewHolder(ChannelItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val channelWithLangs = channels[position]
-        val channel = channelWithLangs.channel
-        holder.binding.apply {
-            root.setOnClickListener { v ->
-                Intent(v.context, PlayerActivity::class.java).apply {
-                    putExtra("channel", channel)
-                    v.context.startActivity(this)
-                }
-            }
-            name.text = channel.name
-            name.isSelected = true
-            categ.text = if (channel.category.isNotEmpty()) channel.category else "Undefined"
-
-
-            Glide.with(root.context)
-                .load(channel.logo)
-                .into(img)
-        }
+        holder.bind(channels[position])
     }
 
     override fun getItemCount() = differ.currentList.size

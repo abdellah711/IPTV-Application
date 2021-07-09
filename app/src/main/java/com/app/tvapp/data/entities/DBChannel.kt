@@ -13,7 +13,7 @@ data class DBChannel(
     val logo: String,
     val name: String,
     val url: String,
-    val isFav: Boolean = false
+    var isFav: Boolean = false
 //    val countries: List<Country>,
 //    val tvg: Tvg,
 //    val languages: List<Language>

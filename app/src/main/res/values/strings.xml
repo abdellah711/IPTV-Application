@@ -2,8 +2,20 @@
     <string name="app_name">TV App</string>
     <string name="search">Search...</string>
     <string name="no_suggestion">No Suggestion!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="no_favorite">No Favorite</string>
     <string name="no_result">No Search Results</string>
+    <string name="home">Home</string>
+    <string name="categories">Categories</string>
+    <string name="settings">Settings</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="subject">Subject</string>
+    <string name="message">Message</string>
+    <string name="support_email" translatable="false">support@gmail.com</string>
+    <string name="dialog_error_title">" Something wrong!"</string>
+    <string name="dialog_error_msg">Please check your internat connection or change the channel.</string>
+    <string name="go_back">Go back</string>
+    <string name="retry">Retry</string>
+    <string name="loading_data">Loading data</string>
+    <string name="check_internet_msg">Please check your internet connection and try again!</string>
+    <string name="network_error">No Internet</string>
 </resources>

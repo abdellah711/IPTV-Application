@@ -39,18 +39,21 @@ class MainViewModel @Inject constructor(
     var searchResult: MutableLiveData<Resource<List<ChannelWithLangs>>> =
         MutableLiveData(Resource.Loading())
 
+    var isFetching = MutableLiveData(true)
+
+    var networkError = MutableLiveData(false)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
 
-            if (channelDao.getCount() == 0) {
-                fetchData()
+            if (channelDao.getCount() < 1000) {
+                networkError.postValue(!fetchData())
             }
-
+            isFetching.postValue(false)
         }
     }
 
-    private suspend fun fetchData() {
+    private suspend fun fetchData(): Boolean{
         try {
             val response = channelApi.getChannels()
             if (response.isSuccessful && response.body() != null) {
@@ -62,11 +65,14 @@ class MainViewModel @Inject constructor(
 
                     channelDao.insertChannel(*data)
                 }
+                return true
             }
+
         } catch (e: Exception) {
             Log.e("View Model", "fetch err: ${e.message}")
-        }
 
+        }
+        return false
     }
 
 
@@ -83,6 +89,14 @@ class MainViewModel @Inject constructor(
     fun deleteSuggestion(suggestion: Suggestion) {
         viewModelScope.launch(Dispatchers.IO) {
             channelDao.deleteSuggestion(suggestion)
+        }
+    }
+
+    fun deleteAllData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            channelDao.deleteAllChannels()
+            channelDao.deleteAllSuggestions()
+            fetchData()
         }
     }
 

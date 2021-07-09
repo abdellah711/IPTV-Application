@@ -1,46 +1,59 @@
 package com.app.tvapp.ui
 
-import android.app.PendingIntent
 import android.app.PictureInPictureParams
-import android.app.RemoteAction
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.drawable.Icon
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.Rational
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.app.tvapp.R
-import com.app.tvapp.data.entities.DBChannel
 import com.app.tvapp.databinding.ActivityPlayerBinding
+import com.app.tvapp.viewmodels.PlayerViewModel
 import com.bumptech.glide.Glide
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PlayerActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityPlayerBinding
     private var player: SimpleExoPlayer? = null
-    private var channel: DBChannel? = null
     private var playWhenReady = true
 
+
+    private val viewModel: PlayerViewModel by viewModels()
+
     private lateinit var listener: Player.EventListener
+
+    private val errorDialog: AlertDialog by lazy {
+
+        AlertDialog.Builder(this@PlayerActivity, R.style.ErrorDialog)
+            .setTitle(R.string.dialog_error_title)
+            .setMessage(R.string.dialog_error_msg)
+            .setPositiveButton(R.string.go_back) { _, _ ->
+                finish()
+            }
+            .setNegativeButton(R.string.retry) { _, _ ->
+                player?.prepare()
+            }
+            .create()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,19 +71,21 @@ class PlayerActivity : AppCompatActivity() {
 
         setupToolbar()
 
-        channel = intent.getParcelableExtra("channel")
+        updateChannel(intent)
+
         setupPlayerChannelDetails()
-        setupPlayerListener()
+        setupPlayerListeners()
 
     }
 
     private fun setupPlayerChannelDetails() {
         binding.player.apply {
-            findViewById<TextView>(R.id.title_tv).text = channel?.name ?: ""
-            findViewById<TextView>(R.id.categ).text = channel?.category ?: ""
+            findViewById<TextView>(R.id.title_tv).text = viewModel.channel?.name ?: ""
+            findViewById<TextView>(R.id.categ).text = viewModel.channel?.category ?: ""
 
             Glide.with(this@PlayerActivity)
-                .load(channel?.logo)
+                .load(viewModel.channel?.logo)
+                .error(R.drawable.ic_no_logo)
                 .into(findViewById(R.id.channel_icon))
 
         }
@@ -78,12 +93,13 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         val toolbar = binding.player.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.overflowIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun setupPlayerListener() {
+    private fun setupPlayerListeners() {
         listener = object : Player.EventListener {
             override fun onPlaybackStateChanged(state: Int) {
                 super.onPlaybackStateChanged(state)
@@ -92,6 +108,7 @@ class PlayerActivity : AppCompatActivity() {
                     ExoPlayer.STATE_READY -> {
                         binding.progress.isVisible = false
                         binding.player.keepScreenOn = true
+                        errorDialog.dismiss()
                     }
                     Player.STATE_IDLE, Player.STATE_BUFFERING -> {
                         binding.progress.isVisible = true
@@ -99,24 +116,32 @@ class PlayerActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            override fun onPlayerError(error: ExoPlaybackException) {
+                super.onPlayerError(error)
+                errorDialog.show()
+            }
         }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        channel = intent?.getParcelableExtra("channel")
-        channel?.let {
+        updateChannel(intent)
+        viewModel.channel?.let {
             releasePlayer()
             initPlayer()
             setupPlayerChannelDetails()
         }
+    }
 
-        Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
+    private fun updateChannel(intent: Intent?) {
+        viewModel.channel = intent?.getParcelableExtra("channel")
+        invalidateOptionsMenu()
     }
 
     private fun initPlayer() {
         player = SimpleExoPlayer.Builder(this).build()
-        channel?.url?.let {
+        viewModel.channel?.url?.let {
             player?.addMediaItem(
                 MediaItem.Builder().setMimeType(MimeTypes.APPLICATION_M3U8).setUri(it).build()
             )
@@ -143,7 +168,7 @@ class PlayerActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             enterPictureInPictureMode(
                 PictureInPictureParams.Builder()
-                    .setAspectRatio(Rational(20, 9))
+                    .setAspectRatio(Rational(19, 9))
                     .build()
             )
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -169,6 +194,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val favItem = menu?.findItem(R.id.menu_fav)
+        favItem?.isChecked = viewModel.isFav
         favItem?.icon =
             if (favItem?.isChecked == true) ContextCompat.getDrawable(this, R.drawable.ic_star_rate)
             else ContextCompat.getDrawable(this, R.drawable.ic_star_outline)
@@ -183,16 +209,16 @@ class PlayerActivity : AppCompatActivity() {
                 true
             }
             R.id.menu_fav -> {
-                item.isChecked = !item.isChecked
+                viewModel.saveFav(!item.isChecked)
                 invalidateOptionsMenu()
-                false
+                true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onBackPressed() {
-        if (player?.isPlaying == true){
+        if (player?.isPlaying == true) {
             startPIP()
             return
         }
@@ -201,14 +227,14 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (Util.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= 24) {
             releasePlayer()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (Util.SDK_INT < 24) {
+        if (Build.VERSION.SDK_INT < 24) {
             releasePlayer()
         }
     }

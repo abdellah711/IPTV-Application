@@ -1,6 +1,7 @@
 package com.app.tvapp.ui.frags
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.tvapp.adapters.ChannelsPagingAdapter
@@ -59,24 +59,34 @@ class ChannelFragment : Fragment() {
             setHasFixedSize(true)
             adapter = this@ChannelFragment.pagingAdapter
         }
-        if(isFav)
+
+
+
+        if(isFav) {
             viewModel.favs.observe(viewLifecycleOwner) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     pagingAdapter.submitData(it)
                 }
-
+            }
+            pagingAdapter.addLoadStateListener {
+                binding.shimmer.isVisible = false
                 binding.emptyLayout.isVisible = pagingAdapter.itemCount == 0
             }
-        else
+        }
+        else {
             viewModel.channels.observe(viewLifecycleOwner) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     pagingAdapter.submitData(it)
                 }
             }
+            pagingAdapter.addLoadStateListener {
+                binding.shimmer.isVisible = pagingAdapter.itemCount == 0
+            }
+        }
     }
 
     companion object {
-        @JvmStatic
+
         fun newInstance(fav: Boolean = false) =
             ChannelFragment().apply {
                 arguments = Bundle().apply {

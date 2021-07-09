@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/mainFragment"
@@ -13,12 +13,62 @@
         <action
             android:id="@+id/action_mainFragment_to_searchFragment"
             app:destination="@id/searchFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_pop_exit_anim" />
+            app:enterAnim="@anim/anim_trans_in"
+            app:exitAnim="@anim/anim_trans_out"
+            app:popEnterAnim="@anim/anim_trans_in_pop"
+            app:popExitAnim="@anim/anim_trans_out_pop"/>
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.app.tvapp.ui.frags.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.app.tvapp.ui.frags.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/anim_trans_in"
+            app:exitAnim="@anim/anim_trans_out"
+            app:popEnterAnim="@anim/anim_trans_in_pop"
+            app:popExitAnim="@anim/anim_trans_out_pop"/>
+    </fragment>
+    <fragment
+
+        android:id="@+id/contactFragment"
+        android:name="com.app.tvapp.ui.frags.ContactFragment"/>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.app.tvapp.ui.frags.SettingsFragment"
+        android:label="SettingsFragment"/>
+
+    <action app:destination="@id/settingsFragment"
+        android:id="@+id/action_to_settingsFragment"
+        app:enterAnim="@anim/anim_trans_in"
+        app:exitAnim="@anim/anim_trans_out"
+        app:popEnterAnim="@anim/anim_trans_in_pop"
+        app:popExitAnim="@anim/anim_trans_out_pop"/>
+
+    <action
+        android:id="@+id/action_to_contactFragment"
+        app:destination="@id/contactFragment"
+        app:enterAnim="@anim/anim_trans_in"
+        app:exitAnim="@anim/anim_trans_out"
+        app:popEnterAnim="@anim/anim_trans_in_pop"
+        app:popExitAnim="@anim/anim_trans_out_pop" />
+
+     <action
+        android:id="@+id/action_to_mainFragment"
+         app:popUpTo="@id/mainFragment"
+         app:enterAnim="@anim/anim_trans_in"
+         app:exitAnim="@anim/anim_trans_out"
+         app:popEnterAnim="@anim/anim_trans_in_pop"
+         app:popExitAnim="@anim/anim_trans_out_pop"
+         />
+
+
 </navigation>
